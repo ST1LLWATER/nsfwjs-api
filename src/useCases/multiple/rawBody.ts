@@ -1,6 +1,8 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { getPrediction } from '../../getPrediction.js';
 import { FromSchema } from 'json-schema-to-ts';
+import * as tf from '@tensorflow/tfjs-node';
+import fetch from 'node-fetch';
 import sharp from 'sharp';
 
 export const rawFormBodySchema = {
@@ -28,20 +30,25 @@ export async function rawBodyForm(
 ) {
   const { sources } = request.body as BodyEntry;
 
+  async function getImageBuffer(url: string): Promise<Buffer> {
+    const res = await fetch(url);
+    return await res.buffer();
+  }
+
   const images = await Promise.all(
-    sources.map(async (url) => {
-      const metadata = await sharp(url).metadata();
-      const image = await sharp(url)
-        .raw()
-        .toBuffer()
-        .then((data: Buffer) => {
-          return {
-            data: new Int32Array(data),
-            width: metadata.width,
-            height: metadata.height,
-          };
-        });
-      return image;
+    sources.map(async (url: string) => {
+      const imageBuffer = await getImageBuffer(url);
+      let image = await sharp(imageBuffer)
+        .resize({
+          width: 1080,
+          height: 1080,
+          fit: 'contain',
+          withoutEnlargement: true,
+        })
+        .jpeg({ quality: 100 })
+        .toBuffer();
+
+      return tf.node.decodeImage(image, 3);
     })
   );
 

@@ -12,7 +12,7 @@ interface Image {
   height: number;
 }
 
-export async function getPrediction(image: Tensor3D) {
+export async function getPrediction(image: Tensor3D | Tensor4D) {
   //   const tfImage = tf.node.decodeImage(imageBuffer, 3);
 
   const prediction = await model.classify(image);

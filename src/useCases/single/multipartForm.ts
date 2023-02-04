@@ -35,25 +35,18 @@ export async function SingleMultipartForm(
 
   const convert = async (img: Buffer) => {
     // Decoded image in UInt8 Byte array
-    const image = await sharp(img)
-      .raw()
+
+    const jpeg = await sharp(img)
+      .jpeg({ quality: 100 })
+      .resize({
+        width: 1080,
+        height: 1080,
+        fit: 'contain',
+        withoutEnlargement: true,
+      })
       .toBuffer();
 
-    const metadata = await sharp(img).metadata();
-
-    const numChannels = 3;
-    const numPixels = metadata.width * metadata.height;
-    const values = new Int32Array(numPixels * numChannels);
-
-    for (let i = 0; i < numPixels; i++)
-      for (let c = 0; c < numChannels; ++c)
-        values[i * numChannels + c] = image[i * 4 + c];
-
-    return tf.tensor3d(
-      values,
-      [metadata.height, metadata.width, numChannels],
-      'int32'
-    );
+    return tf.node.decodeImage(jpeg, 3);
   };
 
   const image = await convert(input.data);
