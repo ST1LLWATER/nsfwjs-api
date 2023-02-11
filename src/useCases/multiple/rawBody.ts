@@ -56,5 +56,5 @@ export async function rawBodyForm(
     images.map(async (image) => getPrediction(image))
   );
 
-  return reply.send({ predictions });
+  return reply.send({predictions});
 }
