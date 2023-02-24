@@ -17,7 +17,7 @@ export async function getPrediction(image: Tensor3D | Tensor4D) {
 
   const prediction = await model.classify(image);
 
-  //   tfImage.dispose();
+  image.dispose();
 
   return prediction;
 }

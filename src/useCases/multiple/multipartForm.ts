@@ -43,7 +43,7 @@ export async function MultipleMultipartForm(
       })
       .toBuffer();
 
-    return tf.node.decodeImage(image, 3);
+    return tf.node.decodeImage(img, 3);
   };
 
   let imagesData = request.body.contents as BodyEntry[];

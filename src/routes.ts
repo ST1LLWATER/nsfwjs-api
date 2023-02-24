@@ -32,11 +32,7 @@ export function routes(
     MultipleMultipartForm
   );
 
-  fastify.post(
-    '/multiple/url',
-    { schema: { body: rawFormBodySchema } },
-    rawBodyForm
-  );
+  fastify.post('/url', { schema: { body: rawFormBodySchema } }, rawBodyForm);
 
   done();
 }

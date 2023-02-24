@@ -97,31 +97,11 @@
 
 #### Multiple images, url as sources
 
-`POST` request to `/multiple/url` sending an image in the `content` field
+`POST` request to `/url` sending an image url in the `sources` field
 
 ```
 {
-  "prediction": [
-    {
-      "className": "Neutral",
-      "probability": 0.6371303796768188
-    },
-    {
-      "className": "Drawing",
-      "probability": 0.3603636920452118
-    },
-    {
-      "className": "Hentai",
-      "probability": 0.0024505197070538998
-    },
-    {
-      "className": "Sexy",
-      "probability": 0.00003775714503717609
-    },
-    {
-      "className": "Porn",
-      "probability": 0.000017730137187754735
-    }
-  ]
+  "classification": [
+    "Neutral"
 }
 ```

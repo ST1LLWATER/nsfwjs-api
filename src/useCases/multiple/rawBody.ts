@@ -4,6 +4,7 @@ import { FromSchema } from 'json-schema-to-ts';
 import * as tf from '@tensorflow/tfjs-node';
 import fetch from 'node-fetch';
 import sharp from 'sharp';
+import { combineResults } from '../../combineResults.js';
 
 export const rawFormBodySchema = {
   type: 'object',
@@ -32,7 +33,8 @@ export async function rawBodyForm(
 
   async function getImageBuffer(url: string): Promise<Buffer> {
     const res = await fetch(url);
-    return await res.buffer();
+    const arrayBuffer = await res.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   }
 
   const images = await Promise.all(
@@ -40,8 +42,8 @@ export async function rawBodyForm(
       const imageBuffer = await getImageBuffer(url);
       let image = await sharp(imageBuffer)
         .resize({
-          width: 1080,
-          height: 1080,
+          width: 299,
+          height: 299,
           fit: 'contain',
           withoutEnlargement: true,
         })
@@ -56,5 +58,7 @@ export async function rawBodyForm(
     images.map(async (image) => getPrediction(image))
   );
 
-  return reply.send({predictions});
+  const classification = combineResults({ predictions });
+
+  return reply.send({ classification });
 }
